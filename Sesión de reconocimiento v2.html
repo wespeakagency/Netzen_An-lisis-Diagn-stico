@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Netzen - Sesión de reconocimiento v2 | WeSpeak</title>
+  <meta name="description" content="Guía interna final de reconocimiento de Netzen, corregida con las sesiones del 28 y 29 de mayo de 2026." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --netzen-red: #E31E24;
+      --netzen-dark: #0a0a0a;
+      --ws-blue: #00C8FF;
+      --ws-teal: #00FFA3;
+      --surface: #111318;
+      --surface-2: #1a1e27;
+      --surface-3: #222732;
+      --border: rgba(255,255,255,0.08);
+      --text-primary: #F0F2F7;
+      --text-secondary: #9BA3B5;
+      --text-muted: #5A6275;
+      --accent-red: #E31E24;
+      --accent-blue: #00C8FF;
+      --accent-green: #00FFA3;
+      --accent-gold: #FFB547;
+      --accent-purple: #A78BFA;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--netzen-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-red); border-radius: 3px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .nav-brand img { height: 32px; border-radius: 6px; }
+    .nav-brand-text {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+    }
+    .nav-links {
+      display: flex; gap: 0.25rem; list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .nav-links a:hover {
+      color: var(--text-primary);
+      background: var(--surface-2);
+    }
+    .nav-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+      color: white;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 80px 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(227,30,36,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,200,255,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .hero-eyebrow::before { content: '●'; font-size: 0.5rem; color: var(--accent-green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 span { color: var(--accent-red); }
+    .hero h1 .blue { color: var(--accent-blue); }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+
+    .hero-stats {
+      display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .hero-stat {
+      text-align: center;
+    }
+    .hero-stat-num {
+      font-family: 'Sora', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-red), #ff9a9a);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-stat-num.blue { background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .session-badges {
+      display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;
+    }
+    .session-badge {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+    }
+    .session-badge.active { border-color: var(--accent-red); color: var(--accent-red); background: rgba(227,30,36,0.08); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 2rem; }
+
+    section { padding: 5rem 0; }
+
+    .section-header {
+      margin-bottom: 3rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin-bottom: 0.75rem;
+    }
+    .section-header h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .section-header h2 em { font-style: normal; color: var(--accent-red); }
+    .section-header p { color: var(--text-secondary); font-size: 1rem; max-width: 600px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      transition: all 0.3s;
+    }
+    .card:hover {
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .card-accent-red { border-left: 3px solid var(--accent-red); }
+    .card-accent-blue { border-left: 3px solid var(--accent-blue); }
+    .card-accent-green { border-left: 3px solid var(--accent-green); }
+    .card-accent-gold { border-left: 3px solid var(--accent-gold); }
+    .card-accent-purple { border-left: 3px solid var(--accent-purple); }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .card p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── GRIDS ── */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+    @media(max-width:900px) { .grid-2,.grid-3,.grid-4{grid-template-columns:1fr} }
+    @media(min-width:640px) and (max-width:900px) { .grid-2{grid-template-columns:repeat(2,1fr)} }
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead th {
+      background: var(--surface-2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text-secondary);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--surface-2); color: var(--text-primary); }
+    .td-title { font-weight: 600; color: var(--text-primary); }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .badge-red { background: rgba(227,30,36,0.15); color: #ff6b6b; }
+    .badge-blue { background: rgba(0,200,255,0.12); color: var(--accent-blue); }
+    .badge-green { background: rgba(0,255,163,0.12); color: var(--accent-green); }
+    .badge-gold { background: rgba(255,181,71,0.12); color: var(--accent-gold); }
+    .badge-purple { background: rgba(167,139,250,0.12); color: var(--accent-purple); }
+    .badge-gray { background: var(--surface-3); color: var(--text-muted); }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent-red), var(--accent-blue), var(--accent-green));
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5rem;
+      padding-left: 1.5rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.45rem; top: 6px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      border: 2px solid var(--netzen-dark);
+      box-shadow: 0 0 12px rgba(227,30,36,0.5);
+    }
+    .timeline-date {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-red);
+      margin-bottom: 0.25rem;
+    }
+    .timeline-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .timeline-body { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── PROCESS FLOW ── */
+    .process-flow {
+      display: flex; align-items: flex-start; gap: 0; overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+    .process-step {
+      flex: 1; min-width: 180px;
+      text-align: center;
+      position: relative;
+    }
+    .process-step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -0.75rem; top: 28px;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+    }
+    .process-icon {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 0.75rem;
+    }
+    .process-step h4 { font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .process-step p { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* ── QUOTE ── */
+    .quote-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-red);
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .quote-block p {
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 0.5rem;
+    }
+    .quote-author { font-size: 0.75rem; font-weight: 700; color: var(--accent-red); }
+
+    /* ── ORG CHART ── */
+    .org-tree {
+      text-align: center;
+      padding: 2rem 0;
+      overflow-x: auto;
+    }
+    .org-box {
+      display: inline-flex; flex-direction: column; align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      min-width: 160px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .org-box:hover { border-color: var(--accent-red); transform: translateY(-2px); }
+    .org-box.top { background: linear-gradient(135deg, rgba(227,30,36,0.15), rgba(227,30,36,0.05)); border-color: rgba(227,30,36,0.4); }
+    .org-box.mid { background: linear-gradient(135deg, rgba(0,200,255,0.1), rgba(0,200,255,0.03)); border-color: rgba(0,200,255,0.25); }
+    .org-name { font-size: 0.78rem; font-weight: 700; color: var(--text-primary); }
+    .org-role { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+    .org-level { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 0.75rem 0; }
+    .org-connector { width: 2px; height: 24px; background: var(--border); margin: 0 auto; }
+    .org-connector-h { height: 2px; background: var(--border); margin: 0.25rem 0; }
+
+    /* ── SWOT ── */
+    .swot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .swot-cell {
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .swot-cell:nth-child(1) { background: rgba(0,255,163,0.06); }
+    .swot-cell:nth-child(2) { background: rgba(227,30,36,0.06); }
+    .swot-cell:nth-child(3) { background: rgba(0,200,255,0.06); }
+    .swot-cell:nth-child(4) { background: rgba(255,181,71,0.06); }
+    .swot-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .swot-cell:nth-child(1) .swot-label { color: var(--accent-green); }
+    .swot-cell:nth-child(2) .swot-label { color: #ff6b6b; }
+    .swot-cell:nth-child(3) .swot-label { color: var(--accent-blue); }
+    .swot-cell:nth-child(4) .swot-label { color: var(--accent-gold); }
+    .swot-cell h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .swot-list { list-style: none; }
+    .swot-list li {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      padding: 4px 0;
+      padding-left: 1.25rem;
+      position: relative;
+    }
+    .swot-list li::before { content: '→'; position: absolute; left: 0; color: var(--text-muted); }
+
+    /* ── PRODUCT CARD ── */
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      transition: all 0.3s;
+      height: 100%;
+    }
+    .product-card:hover {
+      border-color: rgba(255,255,255,0.15);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      transform: translateY(-4px);
+    }
+    .product-header {
+      display: flex; align-items: flex-start; gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .product-icon-wrap {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .product-card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .product-meta { font-size: 0.72rem; color: var(--text-muted); }
+    .product-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem; }
+    .product-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .product-pricing {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+    }
+    .price-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .price-value { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; }
+
+    /* ── METRICS ── */
+    .metric-row {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .metric-row:last-child { border-bottom: none; }
+    .metric-icon { font-size: 1.25rem; width: 36px; text-align: center; }
+    .metric-label { flex: 1; font-size: 0.875rem; color: var(--text-secondary); }
+    .metric-value { font-weight: 700; font-size: 0.9rem; }
+
+    /* ── BAR ── */
+    .bar-container { margin: 0.5rem 0; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 4px; }
+    .bar-track { height: 6px; background: var(--surface-3); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+
+    /* ── INSIGHT CALLOUT ── */
+    .insight {
+      background: linear-gradient(135deg, rgba(0,200,255,0.08), rgba(0,255,163,0.04));
+      border: 1px solid rgba(0,200,255,0.2);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .insight-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .insight h4 { font-weight: 700; font-size: 0.9rem; color: var(--accent-blue); margin-bottom: 0.25rem; }
+    .insight p { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.6; }
+
+    .warning {
+      background: rgba(255,181,71,0.08);
+      border: 1px solid rgba(255,181,71,0.25);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .warning h4 { font-weight: 700; font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 0.25rem; }
+    .warning p { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── SECTION DIVIDER ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      text-align: center;
+    }
+    footer p { color: var(--text-muted); font-size: 0.8rem; }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(227,30,36,0.12), rgba(227,30,36,0.04));
+      border: 1px solid rgba(227,30,36,0.25);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+    }
+    .highlight-box h3 {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      color: var(--accent-red);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── FAQ / QUESTIONS ── */
+    .question-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .q-num {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; color: white;
+    }
+    .q-text { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+    .q-text strong { color: var(--text-primary); }
+
+    /* ── FUNNEL ── */
+    .funnel {
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    }
+    .funnel-step {
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      position: relative;
+      font-size: 0.875rem;
+    }
+    .funnel-step h4 { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .funnel-step p { font-size: 0.75rem; color: var(--text-muted); }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+      gap: 1.25rem;
+    }
+    .team-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .team-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+    .team-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      margin: 0 auto 0.75rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+    .team-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .team-card p { font-size: 0.72rem; color: var(--text-muted); }
+
+    /* glow effect on numbers */
+    .glow-red { text-shadow: 0 0 30px rgba(227,30,36,0.5); }
+    .glow-blue { text-shadow: 0 0 30px rgba(0,200,255,0.5); }
+
+    @media(max-width:600px) {
+      .nav-links { display: none; }
+      .swot-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.2rem; }
+      .hero-stats { gap: 1.5rem; }
+    }
+  
+    .status-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .status-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(17,19,24,0.82);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+    .confirmed { background: var(--accent-green); }
+    .strategy { background: var(--accent-blue); }
+    .pending { background: var(--accent-gold); }
+    .removed { background: var(--accent-red); }
+
+    .kicker {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.55rem;
+    }
+    .lead {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.75;
+    }
+    .fact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .fact-list li {
+      color: var(--text-secondary);
+      font-size: 0.86rem;
+      padding-left: 1.1rem;
+      position: relative;
+    }
+    .fact-list li::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      background: var(--accent-blue);
+    }
+    .fact-list.green li::before { background: var(--accent-green); }
+    .fact-list.gold li::before { background: var(--accent-gold); }
+    .fact-list.red li::before { background: var(--accent-red); }
+
+    .status-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .status-card::after {
+      content: attr(data-status);
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      color: var(--text-muted);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .status-card[data-tone="confirmed"]::after { color: var(--accent-green); }
+    .status-card[data-tone="strategy"]::after { color: var(--accent-blue); }
+    .status-card[data-tone="pending"]::after { color: var(--accent-gold); }
+
+    .correction-grid {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.9fr) minmax(220px, 1.1fr) minmax(260px, 1.4fr);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .correction-grid > div {
+      padding: 1rem 1.15rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+    .correction-grid > div:nth-child(3n) { border-right: none; }
+    .correction-grid > div:nth-last-child(-n+3) { border-bottom: none; }
+    .correction-grid .head {
+      background: var(--surface-2);
+      color: var(--text-primary);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .old-claim { color: #ff9a9a !important; }
+    .new-claim { color: #b9ffdf !important; }
+
+    .step-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+    .step {
+      display: flex;
+      gap: 0.9rem;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+    }
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+    .step h4 {
+      font-size: 0.86rem;
+      margin-bottom: 0.25rem;
+    }
+    .step p {
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      line-height: 1.55;
+    }
+
+    .track {
+      border-left: 3px solid var(--accent-blue);
+      padding-left: 1rem;
+    }
+    .track.green { border-color: var(--accent-green); }
+    .track.gold { border-color: var(--accent-gold); }
+    .track.red { border-color: var(--accent-red); }
+    .track h4 { margin-bottom: 0.35rem; font-size: 0.95rem; }
+    .track p { color: var(--text-secondary); font-size: 0.82rem; }
+
+    .label-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+    }
+    .label {
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .decision-strip > div {
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .decision-strip strong {
+      display: block;
+      font-size: 0.78rem;
+      margin-bottom: 0.3rem;
+    }
+    .decision-strip span {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      line-height: 1.45;
+    }
+
+    .subsection-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 2.5rem 0 1.25rem;
+    }
+    .note {
+      padding: 1rem 1.15rem;
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: rgba(255,181,71,0.07);
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+    .note strong { color: var(--accent-gold); }
+
+    .compact-table td, .compact-table th { padding: 0.8rem 0.9rem; }
+    .compact-table td { font-size: 0.78rem; }
+
+    .nav-links { gap: 0; }
+    .nav-links a { padding-left: 8px; padding-right: 8px; font-size: 0.72rem; }
+
+    @media(max-width:900px) {
+      .correction-grid { grid-template-columns: 1fr; }
+      .correction-grid > div {
+        border-right: none;
+        border-bottom: 1px solid var(--border) !important;
+      }
+      .correction-grid > div:last-child { border-bottom: none !important; }
+      .correction-grid .head { display: none; }
+      .old-claim::before, .new-claim::before {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: var(--text-muted);
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .old-claim::before { content: "Versión 1"; }
+      .new-claim::before { content: "Versión 2"; }
+      .step-list, .decision-strip { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+  <nav>
+    <div class="nav-brand">
+      <img src="wespeak_logo_1779934269641.png" alt="WeSpeak" onerror="this.style.display='none'" />
+      <div>
+        <div style="font-weight:800;font-size:0.9rem;font-family:'Sora',sans-serif;">WeSpeak</div>
+        <div class="nav-brand-text">x Netzen · Reconocimiento v2</div>
+      </div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#criterio">Criterio</a></li>
+      <li><a href="#empresa">Empresa</a></li>
+      <li><a href="#oferta">Oferta</a></li>
+      <li><a href="#operacion">Operación</a></li>
+      <li><a href="#comercial">Comercial</a></li>
+      <li><a href="#mercado">Mercado</a></li>
+      <li><a href="#equipo">Equipo</a></li>
+      <li><a href="#estrategia">Estrategia</a></li>
+      <li><a href="#cambios">Cambios</a></li>
+      <li><a href="#pendientes">Pendientes</a></li>
+    </ul>
+    <span class="nav-badge">Confidencial</span>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Guía interna final · Versión 2 · 29 mayo 2026</div>
+    <h1>
+      El mapa correcto de <span>Netzen</span><br />
+      para construir la <span class="blue">estrategia</span>
+    </h1>
+    <p class="hero-sub">
+      Consolidación depurada de ocho sesiones de reconocimiento y los anexos disponibles.
+      Esta versión elimina afirmaciones incorrectas, separa hechos de propuestas y deja visibles
+      los datos que todavía requieren confirmación documental.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num glow-red">30+</div>
+        <div class="hero-stat-label">Años de experiencia</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num blue glow-blue">8</div>
+        <div class="hero-stat-label">Sesiones consolidadas</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num glow-red">3</div>
+        <div class="hero-stat-label">Núcleos de negocio</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num blue glow-blue">2</div>
+        <div class="hero-stat-label">Diplomados distintos</div>
+      </div>
+    </div>
+    <div class="session-badges">
+      <span class="session-badge active">Pre Kickoff · 15 mayo</span>
+      <span class="session-badge active">Sesiones 1 a 4 · 18-25 mayo</span>
+      <span class="session-badge active">Sesión final PT1 · 28 mayo</span>
+      <span class="session-badge active">Sesión final PT2 · 29 mayo</span>
+    </div>
+    <div class="status-legend">
+      <span class="status-key"><span class="status-dot confirmed"></span>Confirmado por Netzen</span>
+      <span class="status-key"><span class="status-dot strategy"></span>Hipótesis o decisión estratégica</span>
+      <span class="status-key"><span class="status-dot pending"></span>Pendiente de validar</span>
+      <span class="status-key"><span class="status-dot removed"></span>Corregido o retirado de v1</span>
+    </div>
+  </section>
+
+  <section id="criterio">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">00 · Cómo usar esta guía</div>
+        <h2>Una sola fuente, con <em>niveles de certeza</em></h2>
+        <p>La v1 presentaba inferencias, recomendaciones y hechos con el mismo peso. Esta versión los separa para evitar que una idea de campaña se convierta accidentalmente en una afirmación corporativa.</p>
+      </div>
+
+      <div class="decision-strip">
+        <div>
+          <strong style="color:var(--accent-green);">Hecho confirmado</strong>
+          <span>Información expresamente validada por Lizelotte, Gerardo, Irving o Diego, o respaldada por anexos.</span>
+        </div>
+        <div>
+          <strong style="color:var(--accent-blue);">Ruta estratégica</strong>
+          <span>Recomendación de WeSpeak o alternativa aceptada para exploración. No debe comunicarse como producto existente.</span>
+        </div>
+        <div>
+          <strong style="color:var(--accent-gold);">Pendiente</strong>
+          <span>Dato plausible, pero sin precisión suficiente sobre alcance, precio, vigencia, propietario o evidencia.</span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-accent-green">
+          <div class="kicker">Esta guía sí sirve para</div>
+          <ul class="fact-list green">
+            <li>Alinear al equipo de estrategia, contenido, diseño, ventas y automatización.</li>
+            <li>Construir mensajes sin repetir errores de nomenclatura o segmentación.</li>
+            <li>Preparar la arquitectura del sitio, campañas, presentaciones y contenidos.</li>
+            <li>Identificar qué puede publicarse y qué requiere una aprobación adicional.</li>
+          </ul>
+        </div>
+        <div class="card card-accent-gold">
+          <div class="kicker">Esta guía no sustituye</div>
+          <ul class="fact-list gold">
+            <li>La misión, visión y valores oficiales revisados por Netzen en 2026.</li>
+            <li>El contrato, la lista de precios, los alcances técnicos o la política de datos.</li>
+            <li>El plan estratégico corporativo y el mapa oficial de productos y servicios.</li>
+            <li>Una validación legal, fiscal, de seguridad o de propiedad intelectual.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="empresa">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">01 · Identidad corporativa</div>
+        <h2>Quién es <em>Netzen</em></h2>
+        <p>Una empresa mexicana de tecnología e innovación con más de 30 años de experiencia, especializada históricamente en venta directa y multinivel, con una propuesta enfocada en comercialización y crecimiento.</p>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="card card-accent-red status-card" data-status="Confirmado" data-tone="confirmed">
+          <div class="kicker">Razón social</div>
+          <h3>Netzen S.A. de C.V.</h3>
+          <p>Empresa de tecnología e innovación. Su especialización comprobada está en empresas de venta directa, multinivel y modelos comerciales relacionados.</p>
+        </div>
+        <div class="card card-accent-blue status-card" data-status="Confirmado" data-tone="confirmed">
+          <div class="kicker">Alcance</div>
+          <h3>Operación internacional</h3>
+          <p>Ha atendido operaciones en México, Latinoamérica, Estados Unidos, Canadá y Europa. La plataforma contempla múltiples monedas, idiomas, usuarios y cálculos fiscales latinoamericanos.</p>
+        </div>
+        <div class="card card-accent-green status-card" data-status="Dirección" data-tone="strategy">
+          <div class="kicker">Posicionamiento útil</div>
+          <h3>Tecnología para vender y crecer</h3>
+          <p>Netzen no compite como un ERP contable o de manufactura. Su valor central es habilitar ventas, redes, promociones, fidelización, e-commerce y expansión comercial.</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:2rem;margin-bottom:2rem;">
+        <div class="card">
+          <h3 style="margin-bottom:1.25rem;">Historia que sí conviene contar</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-date">Inicios · década de 1990</div>
+              <div class="timeline-title">La computadora en el bochito</div>
+              <div class="timeline-body">Gerardo García y Lizelotte Ludewig comenzaron jóvenes, transportando e instalando equipos y software directamente con sus clientes.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">Innovación temprana</div>
+              <div class="timeline-title">Web y modelo de renta antes de que fueran estándar</div>
+              <div class="timeline-body">Netzen migró de instalaciones de pago único a un servicio en renta y operado por internet cuando el mercado todavía desconfiaba de ese modelo.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2017 y 2018</div>
+              <div class="timeline-title">Eventos propios de industria y tecnología</div>
+              <div class="timeline-body">Organizó encuentros masivos con conferencias, paneles y talleres para posicionar la transformación tecnológica de la venta directa.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">Última década</div>
+              <div class="timeline-title">Analítica, predicción e inteligencia artificial</div>
+              <div class="timeline-body">Netzen desarrolló capacidades de análisis, predicción, promociones y reporteo inteligente antes de que la IA generativa se volviera tema masivo.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="quote-block">
+            <p>"Ha habido más alma que dinero. Por eso nos hemos mantenido en tecnología durante tantos años: por el entusiasmo, por la innovación, por brindar un servicio a nuestros clientes."</p>
+            <div class="quote-author">Lizelotte Ludewig · Sesión final PT1</div>
+          </div>
+          <div class="card card-accent-purple">
+            <div class="kicker">Empresa familiar</div>
+            <h3>Primera y segunda generación</h3>
+            <p>Gerardo y Lizelotte son la generación fundadora. Diego García Ludewig, su hijo, representa la segunda generación y participa en experiencia de cliente e imagen. Santa Yvette Ludewig Ortiz es hermana de Lizelotte, no hija de los fundadores.</p>
+          </div>
+          <div class="note">
+            <strong>Criterio de comunicación:</strong> los incidentes internos de seguridad y conflictos societarios son parte de la historia privada, pero no deben ser el eje del relato externo. Si se usan, el ángulo debe ser resiliencia, arquitectura y aprendizaje, nunca vulnerabilidad.
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Principios que atraviesan el negocio</h3>
+      <div class="grid-4">
+        <div class="card">
+          <div class="kicker">Servicio</div>
+          <h3>Crecimiento del cliente</h3>
+          <p>El propósito expresado en sesiones es ayudar a los clientes a comercializar, crecer y operar con mayor profesionalismo.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Ética</div>
+          <h3>Responsabilidad de industria</h3>
+          <p>Planes, comisiones, capacitación y manejo de datos se entienden como responsabilidades que impactan empresas, distribuidores y familias.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Agilidad</div>
+          <h3>Core robusto</h3>
+          <p>La arquitectura permite adaptar ciertas funcionalidades con rapidez, sin convertir a Netzen en una fábrica abierta de software a la medida.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Omnicanalidad</div>
+          <h3>Múltiples formas de vender</h3>
+          <p>La plataforma conecta modelos, canales y tácticas comerciales para que el cliente no dependa de una sola vía de venta.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="oferta">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">02 · Arquitectura de oferta</div>
+        <h2>Una marca, <em>tres núcleos</em></h2>
+        <p>Netzen debe funcionar como marca central. Debajo viven Netzen Tecnología, Netzen Academy y Netzen Consulting, cada uno con públicos, productos y recorridos distintos.</p>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="highlight-box">
+          <h3>Netzen Tecnología</h3>
+          <p style="color:var(--text-secondary);font-size:0.86rem;">Licencia de uso de software SaaS, infraestructura dedicada, módulos comerciales, operación, inteligencia y soporte.</p>
+          <div class="label-row"><span class="label">Core del negocio</span><span class="label">B2B</span><span class="label">Ingreso recurrente</span></div>
+        </div>
+        <div class="highlight-box" style="background:linear-gradient(135deg,rgba(0,200,255,0.1),rgba(0,200,255,0.03));border-color:rgba(0,200,255,0.25);">
+          <h3 style="color:var(--accent-blue);">Netzen Academy</h3>
+          <p style="color:var(--text-secondary);font-size:0.86rem;">Dos diplomados distintos, además de talleres. Forma empresarios y profesionaliza fuerzas de ventas.</p>
+          <div class="label-row"><span class="label">Educación</span><span class="label">Confianza</span><span class="label">Semillero</span></div>
+        </div>
+        <div class="highlight-box" style="background:linear-gradient(135deg,rgba(0,255,163,0.08),rgba(0,255,163,0.02));border-color:rgba(0,255,163,0.2);">
+          <h3 style="color:var(--accent-green);">Netzen Consulting</h3>
+          <p style="color:var(--text-secondary);font-size:0.86rem;">Diseño y revisión de planes de compensación, estrategia de negocio, escuela MLM y acompañamiento experto.</p>
+          <div class="label-row"><span class="label">Diferenciador</span><span class="label">Diagnóstico</span><span class="label">Alta confianza</span></div>
+        </div>
+      </div>
+
+      <div class="warning" style="margin-bottom:2rem;">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--accent-red);">01</div>
+        <div>
+          <h4>Decisión de nomenclatura</h4>
+          <p><strong>FRAMEX no debe usarse como nombre general del software.</strong> En las sesiones se aclaró que fue un nombre local o de versión/módulo. Para marketing debe utilizarse "Software Netzen". El nombre registrado referido por Irving es "Multinet MBA"; su uso legal y comercial definitivo debe confirmarse con Netzen.</p>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Netzen Tecnología: qué es y qué no es</h3>
+      <div class="grid-2" style="margin-bottom:2rem;">
+        <div class="card card-accent-green">
+          <div class="kicker">Definición correcta</div>
+          <h3>Licencia SaaS modular</h3>
+          <ul class="fact-list green" style="margin-top:1rem;">
+            <li>Plataforma propietaria orientada a comercialización, redes y crecimiento.</li>
+            <li>Servidor dedicado por cliente, con arquitectura que escala según necesidad.</li>
+            <li>Configuración de marca, módulos y ciertas adaptaciones operativas.</li>
+            <li>Consultoría y acompañamiento incluidos en partes críticas de la instalación.</li>
+            <li>Soporte continuo mediante ejecutivos de cuenta y tickets técnicos.</li>
+          </ul>
+        </div>
+        <div class="card card-accent-red">
+          <div class="kicker">Límite importante</div>
+          <h3>No es una fábrica de software</h3>
+          <ul class="fact-list red" style="margin-top:1rem;">
+            <li>El core no se modifica libremente para cada petición del cliente.</li>
+            <li>Las personalizaciones históricas dificultaron actualizaciones futuras.</li>
+            <li>Los desarrollos completamente a la medida son excepcionales, no la oferta principal.</li>
+            <li>La prioridad es enseñar a usar la plataforma robusta y mantener un producto actualizable.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="product-card">
+          <div class="product-header">
+            <div class="product-icon-wrap" style="background:rgba(227,30,36,0.15);font-weight:800;">SN</div>
+            <div><h3>Software Netzen</h3><div class="product-meta">Core comercial y operativo</div></div>
+          </div>
+          <p class="product-desc">Soporta venta directa, multinivel, puntos de venta, franquicias digitales, unidades de negocio, e-commerce, promociones, lealtad, referidos, comisiones y backoffice.</p>
+          <div class="label-row"><span class="label">Propietario</span><span class="label">Omnicanal</span><span class="label">Multipaís</span></div>
+        </div>
+        <div class="product-card">
+          <div class="product-header">
+            <div class="product-icon-wrap" style="background:rgba(0,200,255,0.12);font-weight:800;">OV</div>
+            <div><h3>Oficina Virtual y tiendas replicadas</h3><div class="product-meta">Herramientas para la red</div></div>
+          </div>
+          <p class="product-desc">Cada distribuidor puede operar con URL, tienda y herramientas propias, consultar genealogía, comisiones, red y contenidos comerciales.</p>
+          <div class="label-row"><span class="label">Escalable</span><span class="label">Autoservicio</span><span class="label">E-commerce</span></div>
+        </div>
+        <div class="product-card">
+          <div class="product-header">
+            <div class="product-icon-wrap" style="background:rgba(167,139,250,0.15);font-weight:800;">NIA</div>
+            <div><h3>NIA</h3><div class="product-meta">Reporteo en lenguaje natural</div></div>
+          </div>
+          <p class="product-desc">La capacidad actual confirmada se concentra en consultar y analizar reportes. Está integrada en las versiones nuevas; no se vende hoy como asistente general independiente.</p>
+          <div class="label-row"><span class="label">Actual</span><span class="label">Integrada</span><span class="label">Reportes</span></div>
+        </div>
+        <div class="product-card">
+          <div class="product-header">
+            <div class="product-icon-wrap" style="background:rgba(255,181,71,0.13);font-weight:800;">PR</div>
+            <div><h3>Predicción y rangos</h3><div class="product-meta">Modelos analíticos</div></div>
+          </div>
+          <p class="product-desc">Algoritmos para anticipar compras, movilidad de rangos y escenarios de comportamiento de la red, incluyendo modelos basados en cadenas de Markov.</p>
+          <div class="label-row"><span class="label">Predictivo</span><span class="label">Red</span><span class="label">Decisiones</span></div>
+        </div>
+        <div class="product-card">
+          <div class="product-header">
+            <div class="product-icon-wrap" style="background:rgba(0,255,163,0.1);font-weight:800;">MP</div>
+            <div><h3>Promociones e inventario</h3><div class="product-meta">Motores especializados</div></div>
+          </div>
+          <p class="product-desc">Reglas complejas de promoción, análisis de impacto, reorden e inventario según proveedor, sucursal, tiempos de entrega y comportamiento comercial.</p>
+          <div class="label-row"><span class="label">Complejidad</span><span class="label">Impacto</span><span class="label">Reorden</span></div>
+        </div>
+        <div class="product-card">
+          <div class="product-header">
+            <div class="product-icon-wrap" style="background:rgba(227,30,36,0.1);font-weight:800;">BO</div>
+            <div><h3>Backoffice</h3><div class="product-meta">Control integral del negocio</div></div>
+          </div>
+          <p class="product-desc">Inventario, facturación, comisiones, crédito, cobranza, indicadores, impuestos, catálogos y operación interna del cliente.</p>
+          <div class="label-row"><span class="label">Operación</span><span class="label">Control</span><span class="label">Permisos</span></div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Satelitales, extras y productos de entrada</h3>
+      <div class="table-wrap" style="margin-bottom:2rem;">
+        <table class="compact-table">
+          <thead>
+            <tr>
+              <th>Oferta</th>
+              <th>Estado correcto</th>
+              <th>Modelo y datos internos</th>
+              <th>Cuidado de comunicación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-title">Metaverso</td>
+              <td><span class="badge badge-green">Disponible como extra</span></td>
+              <td>Puede incluir checkout y pasarela. Instalación referida: $10,000-$15,000 MXN; renta: $2,000-$5,000 MXN. Sesiones de 50-70 usuarios por bloque.</td>
+              <td>La adopción actual es limitada; funciona también como elemento demostrativo y de cierre. No presentarlo como core de uso general.</td>
+            </tr>
+            <tr>
+              <td class="td-title">Live Shopping</td>
+              <td><span class="badge badge-green">Disponible como extra</span></td>
+              <td>Renta referida: $2,000-$5,000 MXN. Puede incorporar transmisiones o videos grabados enlazados al e-commerce.</td>
+              <td>No viene incluido en la licencia base y su disponibilidad depende del mercado/plataforma.</td>
+            </tr>
+            <tr>
+              <td class="td-title">Pasarelas de pago</td>
+              <td><span class="badge badge-green">Capacidad instalada</span></td>
+              <td>Irving reportó aproximadamente 36 integraciones internacionales ya conocidas. Nuevas pasarelas requieren revisar web services y cotización.</td>
+              <td>Confirmar cuántas se incluyen por contrato antes de publicar una cifra comercial.</td>
+            </tr>
+            <tr>
+              <td class="td-title">Tiempo Naranja</td>
+              <td><span class="badge badge-blue">Producto activo</span></td>
+              <td>Ya se realizó la primera venta a un cliente existente y había una segunda negociación. Es un producto de bajo ticket y entrada al ecosistema.</td>
+              <td>Falta documentar oficialmente alcance, precio, fundamento regulatorio, costos y público objetivo.</td>
+            </tr>
+            <tr>
+              <td class="td-title">NIA Advance / Pro</td>
+              <td><span class="badge badge-gold">Concepto futuro</span></td>
+              <td>Posible evolución hacia guía operativa, agente, recomendaciones, personalización y monetización por niveles.</td>
+              <td>No comunicar como producto disponible. La sesión solo aprobó explorar el concepto y definir diferenciadores.</td>
+            </tr>
+            <tr>
+              <td class="td-title">Netzen Light para distribuidores</td>
+              <td><span class="badge badge-gold">Idea exploratoria</span></td>
+              <td>Herramienta personal para agenda y organización de distribuidores cuya empresa no usa Netzen.</td>
+              <td>No existe como oferta confirmada. Requiere análisis de mercado, alcance, costos y conflicto de canal.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="subsection-title">Netzen Academy: dos diplomados, no uno</h3>
+      <div class="grid-2" style="gap:2rem;margin-bottom:1.5rem;">
+        <div class="card card-accent-blue status-card" data-status="Confirmado" data-tone="confirmed">
+          <div class="kicker">Programa 1</div>
+          <h3>Diplomado en Alta Dirección de Ventas Directas y Multinivel</h3>
+          <p class="lead" style="margin-top:0.75rem;">Dirigido a empresarios e inversionistas que quieren incorporar o profesionalizar un canal de venta directa o multinivel.</p>
+          <ul class="fact-list" style="margin-top:1rem;">
+            <li>Objetivo: creación, administración, gestión y crecimiento sostenible de la empresa.</li>
+            <li>Modalidad online; el anexo de mayo 2026 señala 11 semanas.</li>
+            <li>Incluye alta dirección, planes de compensación, operación, legal/fiscal, expansión, redes, propiedad intelectual y fuerza de ventas.</li>
+            <li>Es un programa más personalizado; se mencionó alrededor de 25 participantes como referencia operativa, no como límite rígido.</li>
+          </ul>
+        </div>
+        <div class="card card-accent-purple status-card" data-status="Confirmado" data-tone="confirmed">
+          <div class="kicker">Programa 2</div>
+          <h3>Diplomado de Alta Dirección para el Distribuidor Independiente</h3>
+          <p class="lead" style="margin-top:0.75rem;">Dirigido a la fuerza de ventas para profesionalizar técnicas de venta, cobranza, desarrollo humano, liderazgo, entorno digital y finanzas personales.</p>
+          <ul class="fact-list" style="margin-top:1rem;">
+            <li>Duración documentada: 88 horas.</li>
+            <li>Se comercializa principalmente a empresas para grupos de su fuerza de ventas.</li>
+            <li>Puede operar con cohortes grandes, incluso de 100 a 200 participantes.</li>
+            <li>Una versión multimarcas es posible, pero exige ajustar contenidos y reforzar ética para evitar prácticas de captación entre redes.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Corrección económica:</strong> los datos de $7,000 por alumno, alrededor de $10,000 para cohortes menores, punto de equilibrio cercano a 20 participantes y margen de 35%-45% con 100 alumnos corresponden al modelo discutido para el diplomado de distribuidores. No deben trasladarse automáticamente al diplomado de empresarios. La unidad económica de cada programa sigue pendiente de una tabla oficial.
+      </div>
+
+      <h3 class="subsection-title">Netzen Consulting</h3>
+      <div class="grid-3">
+        <div class="card">
+          <div class="kicker">Planes</div>
+          <h3>Diseño y revisión</h3>
+          <p>Construcción, auditoría matemática, simulación y corrección de planes de compensación, incluyendo incentivos y sostenibilidad.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Negocio</div>
+          <h3>Estrategia integral</h3>
+          <p>Acompañamiento sobre modelo, mercado, operación, profesionalización, expansión y prácticas correctas de la industria.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Tecnología</div>
+          <h3>Consultoría incluida</h3>
+          <p>La contratación del software incluye consultoría crítica para estructurar el plan y evitar implementar reglas inviables o desactualizadas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="operacion">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">03 · Implementación, soporte y tecnología</div>
+        <h2>Cómo se entrega y <em>cómo escala</em></h2>
+        <p>El área comercial conserva la responsabilidad de la relación durante la instalación, mientras especialistas ejecutan cada etapa. El traspaso formal ocurre al cerrar el acompañamiento.</p>
+      </div>
+
+      <h3 class="subsection-title" style="margin-top:0;">Ciclo de instalación</h3>
+      <div class="step-list" style="margin-bottom:2rem;">
+        <div class="step"><div class="step-num">1</div><div><h4>Configuración de identidad</h4><p>Logo, colores, dominio y parámetros iniciales de la organización.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h4>Escuela y definición del plan</h4><p>Consultoría para entender, revisar y estructurar el plan de compensación.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h4>Capacitación</h4><p>Históricamente ocho sesiones de dos horas. Netzen inició la producción de capacitación en video para ampliar capacidad.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div><h4>Configuración operativa</h4><p>Facturación, fletes, pagos, catálogos y parámetros requeridos para operar.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div><h4>Validación del plan</h4><p>Pruebas, revisión de programación, borrado de datos de prueba y montaje definitivo.</p></div></div>
+        <div class="step"><div class="step-num">6</div><div><h4>Acompañamiento de arranque</h4><p>Carga inicial de usuarios, productos, almacenes, precios y elementos esenciales para entregar un sistema funcional.</p></div></div>
+        <div class="step"><div class="step-num">7</div><div><h4>Carta de satisfacción</h4><p>El cliente confirma la entrega; recibe accesos y pasa a la fase formal de soporte.</p></div></div>
+        <div class="step"><div class="step-num">8</div><div><h4>Ejecutivo de cuenta</h4><p>Uno de los dos ejecutivos asignados continúa la relación, atención, incidencias y seguimiento.</p></div></div>
+      </div>
+
+      <div class="grid-2" style="gap:2rem;margin-bottom:2rem;">
+        <div class="card card-accent-blue">
+          <div class="kicker">Responsabilidad</div>
+          <h3>Comercial acompaña hasta la entrega</h3>
+          <p>Irving coordina contrato, cobro, relación y seguimiento interno durante la instalación, aunque cada especialista ejecuta su parte. Comercial termina formalmente con el acompañamiento y la carta de satisfacción.</p>
+        </div>
+        <div class="card card-accent-green">
+          <div class="kicker">Capacidad</div>
+          <h3>No existe un cuello de botella general hoy</h3>
+          <p>La instalación funciona con un flujo definido. El plan de compensación puede extenderse de tres a seis o siete sesiones en casos complejos. La capacitación grabada busca reducir la presión de sesiones en vivo cuando aumente el volumen.</p>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Arquitectura e infraestructura</h3>
+      <div class="grid-2" style="gap:2rem;margin-bottom:2rem;">
+        <div class="card card-accent-red">
+          <h3 style="margin-bottom:1rem;">Modelo técnico confirmado</h3>
+          <ul class="fact-list green">
+            <li>Servidor dedicado por cliente; una empresa con operación previa se dimensiona antes de instalar.</li>
+            <li>Separación de aplicativo, base de datos, motores, réplicas, nodos o balanceadores conforme se requiera.</li>
+            <li>Backups cada 12 horas referidos en Nueva York y Ámsterdam.</li>
+            <li>Monitoreo continuo de capacidad, procesamiento, concurrencia y seguridad.</li>
+            <li>La arquitectura puede aumentar temporalmente en picos específicos de operación.</li>
+          </ul>
+        </div>
+        <div class="card card-accent-gold">
+          <h3 style="margin-bottom:1rem;">Lo que no debe simplificarse</h3>
+          <ul class="fact-list gold">
+            <li>No hay un techo comercial de "400,000 usuarios"; esa cifra fue un caso observado, no un límite técnico.</li>
+            <li>La necesidad de infraestructura no depende solo del número de usuarios o de ventas.</li>
+            <li>Concurrencia, procesos pesados, frecuencia de promociones y arquitectura existente cambian el dimensionamiento.</li>
+            <li>No conviene publicar paquetes rígidos de servidores sin análisis técnico.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="kicker">Renta</div>
+          <h3>Escala prevista en contrato</h3>
+          <p>Para contratos nuevos, la renta asociada al crecimiento de la organización se define desde el inicio. El cliente puede conocer la lógica futura de su tarifa.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Infraestructura</div>
+          <h3>Costo adicional variable</h3>
+          <p>Servidores y cambios de arquitectura se cotizan cuando surge la necesidad, por precios de mercado, tipo de cambio y configuración técnica.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Datos</div>
+          <h3>Custodia y ética</h3>
+          <p>Netzen enfatiza la protección de la base de datos del cliente. La salida y eliminación de información están contempladas contractualmente; el alcance exacto debe revisarse en contrato.</p>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:1.5rem;">
+        <strong>Hospedaje:</strong> la operación se mantiene en infraestructura controlada por Netzen. Instalar el core completo en servidores del cliente no es el modelo actual porque comprometería el control del producto y el esquema SaaS.
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="comercial">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">04 · Comercial, pricing y experiencia</div>
+        <h2>Una venta consultiva con <em>demostración controlada</em></h2>
+        <p>El proceso funciona porque combina confianza, diagnóstico, conocimiento de industria y evidencia técnica. La evolución necesaria es homologar el método y reducir fricción sin exponer el producto a copias.</p>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="card card-accent-red">
+          <div class="kicker">Entrada consultiva</div>
+          <h3>Lizelotte</h3>
+          <p>Detecta necesidades, contexto y viabilidad. Vende desde la experiencia y la confianza, sin depender de mostrar pantallas desde el primer minuto.</p>
+        </div>
+        <div class="card card-accent-blue">
+          <div class="kicker">Entrada técnica</div>
+          <h3>Gerardo</h3>
+          <p>Demuestra el sistema en vivo, profundiza en capacidades y responde límites o posibilidades desde el conocimiento directo del producto.</p>
+        </div>
+        <div class="card card-accent-green">
+          <div class="kicker">Cierre y conducción</div>
+          <h3>Irving</h3>
+          <p>Califica, presenta, adapta el recorrido, maneja propuesta y contrato, y sostiene la relación durante la fase de instalación.</p>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-bottom:2rem;">
+        <div class="insight-icon" style="font-weight:900;">H</div>
+        <div>
+          <h4>Modelo recomendado: híbrido</h4>
+          <p>Un discurso único debe combinar diagnóstico, promesa de crecimiento y prueba técnica. El precio no se entrega antes de que el prospecto entienda el alcance, porque la comparación puramente económica invisibiliza la profundidad del producto.</p>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Journey actual confirmado</h3>
+      <div class="card" style="margin-bottom:2rem;padding:2rem;overflow-x:auto;">
+        <div style="display:flex;gap:0.75rem;min-width:940px;">
+          <div style="flex:1;padding:1rem;background:var(--surface-2);border-radius:var(--radius-sm);border-top:3px solid var(--accent-red);"><div class="kicker" style="color:var(--accent-red);">1 · Origen</div><p style="font-size:0.8rem;color:var(--text-secondary);">Referidos, mediadores mercantiles, eventos y relaciones de industria.</p></div>
+          <div style="display:flex;align-items:center;color:var(--text-muted);">→</div>
+          <div style="flex:1;padding:1rem;background:var(--surface-2);border-radius:var(--radius-sm);border-top:3px solid var(--accent-gold);"><div class="kicker" style="color:var(--accent-gold);">2 · Contacto</div><p style="font-size:0.8rem;color:var(--text-secondary);">Llamada o reunión para comprender empresa, red, producto, etapa y urgencia.</p></div>
+          <div style="display:flex;align-items:center;color:var(--text-muted);">→</div>
+          <div style="flex:1;padding:1rem;background:var(--surface-2);border-radius:var(--radius-sm);border-top:3px solid var(--accent-blue);"><div class="kicker" style="color:var(--accent-blue);">3 · Demo</div><p style="font-size:0.8rem;color:var(--text-secondary);">Recorrido consultivo y técnico. La versión rápida de Irving dura alrededor de 75 minutos.</p></div>
+          <div style="display:flex;align-items:center;color:var(--text-muted);">→</div>
+          <div style="flex:1;padding:1rem;background:var(--surface-2);border-radius:var(--radius-sm);border-top:3px solid var(--accent-purple);"><div class="kicker" style="color:var(--accent-purple);">4 · Propuesta</div><p style="font-size:0.8rem;color:var(--text-secondary);">Instalación, renta, alcance, módulos, arquitectura inicial y condiciones contractuales.</p></div>
+          <div style="display:flex;align-items:center;color:var(--text-muted);">→</div>
+          <div style="flex:1;padding:1rem;background:var(--surface-2);border-radius:var(--radius-sm);border-top:3px solid var(--accent-green);"><div class="kicker" style="color:var(--accent-green);">5 · Entrega</div><p style="font-size:0.8rem;color:var(--text-secondary);">Instalación, acompañamiento, carta de satisfacción y traspaso a soporte.</p></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:2rem;margin-bottom:2rem;">
+        <div class="card card-accent-gold">
+          <div class="kicker">Fricción real</div>
+          <h3>Demos largos y múltiples decisores</h3>
+          <p>El producto es robusto y suele presentarse primero a tecnología, no al dueño. Después, la propuesta pierde precisión cuando un asistente intenta explicar el alcance a socios o dirección.</p>
+          <div class="label-row"><span class="label">75 min con Irving</span><span class="label">Hasta 3 h con Gerardo</span><span class="label">Riesgo de traducción interna</span></div>
+        </div>
+        <div class="card card-accent-blue status-card" data-status="Estrategia" data-tone="strategy">
+          <div class="kicker">Solución por diseñar</div>
+          <h3>Teaser y demo protegido</h3>
+          <p>Crear un video breve o experiencia simplificada que explique valor sin revelar lógica premium. Para prospectos calificados, habilitar un demo controlado, temporal y con acceso restringido.</p>
+          <div class="label-row"><span class="label">Menos fricción</span><span class="label">Más control</span><span class="label">Protección del producto</span></div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Modelo de ingreso del software</h3>
+      <div class="table-wrap" style="margin-bottom:2rem;">
+        <table class="compact-table">
+          <thead><tr><th>Componente</th><th>Estado</th><th>Lectura correcta</th></tr></thead>
+          <tbody>
+            <tr><td class="td-title">Instalación</td><td><span class="badge badge-blue">Pago único</span></td><td>Debe aparecer en cualquier mapa de pricing. El monto depende de configuración y alcance.</td></tr>
+            <tr><td class="td-title">Renta mensual</td><td><span class="badge badge-green">Recurrente</span></td><td>Variable y contractual. En clientes nuevos puede cambiar según el crecimiento de la organización con reglas conocidas desde el inicio.</td></tr>
+            <tr><td class="td-title">Extras</td><td><span class="badge badge-purple">Adicionales</span></td><td>Metaverso, Live Shopping y otras capacidades pueden tener instalación, renta o ambas.</td></tr>
+            <tr><td class="td-title">Infraestructura</td><td><span class="badge badge-gold">Variable</span></td><td>Se cotiza por necesidad técnica; no es equivalente a la renta y no puede fijarse solo por número de usuarios.</td></tr>
+            <tr><td class="td-title">Capacitación posterior</td><td><span class="badge badge-gray">Servicio</span></td><td>La recapacitación en vivo se ha vendido con descuento; el nuevo contenido en video puede cambiar este modelo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warning">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--accent-red);">02</div>
+        <div>
+          <h4>Rentas históricas congeladas</h4>
+          <p>La tensión no nace de que los contratos nuevos carezcan de reglas, sino de clientes antiguos a quienes no se aplicaron ajustes durante años. La prioridad es comunicar valor, mejoras y ruta de actualización antes de ejecutar incrementos. No usar FRAMEX+IA como nombre de campaña hasta definir la nomenclatura correcta.</p>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Canales y sistemas comerciales</h3>
+      <div class="grid-3">
+        <div class="card">
+          <div class="kicker">Hoy</div>
+          <h3>Referidos y mediadores</h3>
+          <p>Existen mediadores mercantiles conocidos por Netzen que reciben comisión mientras el cliente permanece activo. No existe todavía un programa masivo abierto de embajadores.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Sistema interno</div>
+          <h3>CRM existente, integración pendiente</h3>
+          <p>Netzen sí tiene un CRM interno. El reto es conectarlo con marketing, homologar etapas y convertirlo en una experiencia continua de captación a cierre.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Automatización</div>
+          <h3>Web, correo y WhatsApp</h3>
+          <p>La nueva infraestructura comercial debe integrar captación web, seguimiento por correo, WhatsApp y trazabilidad de origen. La conexión con IA es una ruta futura, no un sistema implementado hoy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="mercado">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">05 · Segmentación y mercado</div>
+        <h2>No hay un solo cliente ideal: hay <em>dos rutas prioritarias</em></h2>
+        <p>La v1 descartaba a las startups. Las sesiones finales corrigieron esa conclusión: para ventas inmediatas, una empresa nueva bien capitalizada puede ser mejor que una compañía madura que requiere migración.</p>
+      </div>
+
+      <div class="grid-2" style="gap:2rem;margin-bottom:2rem;">
+        <div class="card card-accent-green">
+          <div class="kicker">Prioridad comercial inmediata</div>
+          <h3>Empresa nueva, preparada para arrancar</h3>
+          <ul class="fact-list green" style="margin-top:1rem;">
+            <li>Capital suficiente para instalar y operar.</li>
+            <li>Fundador con experiencia como líder o conocimiento real de la industria.</li>
+            <li>Producto definido y listo para comercializar.</li>
+            <li>Red inicial, capacidad de convocatoria o plan de lanzamiento.</li>
+            <li>Acepta seguir metodología y adoptar procesos desde cero.</li>
+          </ul>
+          <p style="color:var(--text-muted);font-size:0.78rem;margin-top:1rem;">Ventaja: instalación más rápida, menos resistencia al cambio y ciclo comercial más corto.</p>
+        </div>
+        <div class="card card-accent-blue">
+          <div class="kicker">Prioridad estratégica de estabilidad</div>
+          <h3>Empresa establecida con operación activa</h3>
+          <ul class="fact-list" style="margin-top:1rem;">
+            <li>Red, ventas, producto y procesos comprobados.</li>
+            <li>Dolor claro con software actual o necesidad de capacidades más avanzadas.</li>
+            <li>Valora omnicanalidad, multipaís, analítica y consultoría.</li>
+            <li>Puede sostener una migración y el cambio organizacional.</li>
+            <li>Ofrece mayor permanencia y crecimiento de infraestructura.</li>
+          </ul>
+          <p style="color:var(--text-muted);font-size:0.78rem;margin-top:1rem;">Costo: convencer, migrar y adaptar a los equipos puede tomar meses y muchas reuniones.</p>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="track red">
+          <h4>Mal ajuste: curiosidad sin capital</h4>
+          <p>Emprendedor sin producto, sin red, sin definición operativa y sin recursos para sostener la empresa.</p>
+        </div>
+        <div class="track gold">
+          <h4>Mal ajuste: compra solo por precio</h4>
+          <p>Prospecto que compara licencias sin valorar consultoría, alcance, instalación, soporte y arquitectura.</p>
+        </div>
+        <div class="track red">
+          <h4>Mal ajuste: resistencia al proceso</h4>
+          <p>Organización que no quiere capacitar, validar el plan, profesionalizar la red o adoptar prácticas operativas.</p>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Mercados de Academy</h3>
+      <div class="grid-3">
+        <div class="card">
+          <div class="kicker">Alta Dirección</div>
+          <h3>Empresarios e inversionistas</h3>
+          <p>Personas que evalúan crear una empresa de venta directa o abrir ese canal dentro de un negocio existente.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Distribuidor Independiente</div>
+          <h3>Fuerzas de ventas patrocinadas</h3>
+          <p>Empresas que buscan fidelizar, profesionalizar y elevar productividad, liderazgo, ventas y manejo financiero de su red.</p>
+        </div>
+        <div class="card status-card" data-status="Explorar" data-tone="strategy">
+          <div class="kicker">Expansión posible</div>
+          <h3>Cohortes multimarcas</h3>
+          <p>Distribuidores de distintas compañías, con reglas claras de ética, no captación y adaptación del temario.</p>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Realidad de industria que afecta la estrategia</h3>
+      <div class="grid-2">
+        <div class="card card-accent-purple">
+          <ul class="fact-list">
+            <li>La industria distingue entre el empresario dueño de la compañía y su fuerza de ventas.</li>
+            <li>Eventos multiempresa para distribuidores pueden generar temor al "pirateo" de líderes.</li>
+            <li>Eventos para dueños, directivos y proveedores sí pueden congregar compañías de forma productiva.</li>
+            <li>Netzen ya organizó eventos de industria en 2017 y 2018; existe interés en reactivarlos con patrocinadores para 2027.</li>
+          </ul>
+        </div>
+        <div class="card card-accent-green">
+          <ul class="fact-list green">
+            <li>Omnicanalidad, profesionalización, comercio digital y regulación son conversaciones activas.</li>
+            <li>La fidelización es un término central para hablar de retención de distribuidores.</li>
+            <li>La plataforma puede apoyar operaciones internacionales, pero la comunicación legal debe distinguir cálculo fiscal de asesoría jurídica.</li>
+            <li>Las regulaciones y capacidades por país deben verificarse antes de construir claims globales.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="equipo">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">06 · Organización y responsables</div>
+        <h2>El equipo que sostiene <em>la promesa</em></h2>
+        <p>La estrategia depende de una combinación de dirección, producto, operaciones, comercial, ciberseguridad, experiencia y ejecución técnica.</p>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:2rem;">
+        <div class="card card-accent-red">
+          <div class="kicker">Dirección</div>
+          <h3>Lizelotte Ludewig</h3>
+          <p>Dirección General, visión de negocio, consultoría, academia, cultura, relaciones institucionales y decisión estratégica.</p>
+        </div>
+        <div class="card card-accent-blue">
+          <div class="kicker">Presidencia y producto</div>
+          <h3>Gerardo García</h3>
+          <p>Creador del software, arquitectura de producto, planes de compensación, innovación, demos técnicos y decisiones de core.</p>
+        </div>
+        <div class="card card-accent-green">
+          <div class="kicker">Comercial</div>
+          <h3>Irving Espinosa</h3>
+          <p>Calificación, presentación, propuesta, cierre, contratos y conducción de la relación hasta el final de instalación.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Operaciones</div>
+          <h3>José Alejandro Ramírez</h3>
+          <p>Subdirector de Operaciones y persona clave añadida expresamente por Lizelotte por sus resultados y conocimiento interno.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Ciberseguridad e innovación</div>
+          <h3>Israel García</h3>
+          <p>Custodia técnica del core, arquitectura, seguridad y continuidad de conocimiento junto con Gerardo.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Imagen y experiencia</div>
+          <h3>Diego García</h3>
+          <p>Segunda generación, experiencia de cliente, imagen, rebrand, comunicación visual e iniciativas de innovación de experiencia.</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:2rem;">
+        <div class="card card-accent-green">
+          <h3 style="margin-bottom:1rem;">Corrección operativa</h3>
+          <p>Los procesos internos <strong>sí están documentados y se siguen ejecutando</strong>. La persona que coordinaba esa función salió de la empresa, pero esto no significa que el conocimiento viva únicamente en la práctica.</p>
+        </div>
+        <div class="card card-accent-gold">
+          <h3 style="margin-bottom:1rem;">Áreas de atención vigentes</h3>
+          <ul class="fact-list gold">
+            <li>Integración marketing-comercial dentro del CRM.</li>
+            <li>Dependencia de personas clave en producto, planes y ventas.</li>
+            <li>Estabilidad y escalabilidad del área de experiencia de cliente.</li>
+            <li>Capacidad de producir y reutilizar contenidos de eventos, demos y academia.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="estrategia">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">07 · Diagnóstico estratégico depurado</div>
+        <h2>Fortalezas, fricciones y <em>oportunidades reales</em></h2>
+        <p>Este análisis conserva las líneas útiles de la v1, pero elimina debilidades falsas y reclasifica ideas que todavía no son capacidades implementadas.</p>
+      </div>
+
+      <div class="swot-grid" style="margin-bottom:2rem;">
+        <div class="swot-cell">
+          <div class="swot-label">Fortalezas</div>
+          <h3>Activos difíciles de copiar</h3>
+          <ul class="swot-list">
+            <li>Más de 30 años de experiencia especializada.</li>
+            <li>Software orientado a comercialización y crecimiento.</li>
+            <li>Omnicanalidad y múltiples formas de venta.</li>
+            <li>Consultoría integrada al producto.</li>
+            <li>Dos programas académicos con públicos distintos.</li>
+            <li>Infraestructura dedicada y adaptable.</li>
+            <li>Analítica, predicción y NIA integradas.</li>
+            <li>Agilidad del core para adaptaciones específicas.</li>
+            <li>Cultura de servicio y trato humano.</li>
+            <li>Experiencia multipaís y fiscal latinoamericana.</li>
+          </ul>
+        </div>
+        <div class="swot-cell">
+          <div class="swot-label">Fricciones</div>
+          <h3>Problemas que sí existen</h3>
+          <ul class="swot-list">
+            <li>Presencia digital y captación todavía débiles.</li>
+            <li>Dependencia elevada de referidos y relaciones.</li>
+            <li>CRM interno sin integración completa con marketing.</li>
+            <li>Demos largos y difíciles de replicar.</li>
+            <li>Rentas antiguas sin ajustes aplicados.</li>
+            <li>Personalizaciones históricas que complican migraciones.</li>
+            <li>Innovaciones no comunicadas: rebrand, NIA, metaverso, omnicanalidad.</li>
+            <li>Dependencia de personas clave.</li>
+            <li>Economía de Academy no separada por programa.</li>
+            <li>Feedback de producto poco sistematizado.</li>
+          </ul>
+        </div>
+        <div class="swot-cell">
+          <div class="swot-label">Oportunidades</div>
+          <h3>Palancas de crecimiento</h3>
+          <ul class="swot-list">
+            <li>Nueva web de conversión y arquitectura Netzen / Tecnología / Academy / Consulting.</li>
+            <li>Lanzamiento público del rebrand y de innovaciones acumuladas.</li>
+            <li>Contenido de autoridad basado en historia, industria y casos.</li>
+            <li>Campañas distintas para empresa nueva y empresa establecida.</li>
+            <li>Campañas B2B para el diplomado de distribuidores.</li>
+            <li>Actualización de clientes legacy con comunicación de valor.</li>
+            <li>Tiempo Naranja como puerta de entrada, después de documentarlo.</li>
+            <li>Programa escalable de mediadores, sujeto a modelo y controles.</li>
+            <li>Demo protegido y materiales para decisores.</li>
+            <li>Evento de industria con patrocinadores para 2027.</li>
+          </ul>
+        </div>
+        <div class="swot-cell">
+          <div class="swot-label">Amenazas</div>
+          <h3>Riesgos a gestionar</h3>
+          <ul class="swot-list">
+            <li>Competidores o excolaboradores que copien propuestas.</li>
+            <li>Clientes grandes que desarrollen software propio.</li>
+            <li>Low-code y herramientas genéricas de menor precio.</li>
+            <li>Fuga por incrementos mal comunicados.</li>
+            <li>Dependencia de Gerardo e Israel para conocimiento crítico.</li>
+            <li>Regulación cambiante y claims legales imprecisos.</li>
+            <li>Exponer demasiado producto en demos abiertos.</li>
+            <li>Confundir ideas futuras con capacidades actuales.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Prioridades de acción</h3>
+      <div class="grid-3">
+        <div class="card card-accent-green">
+          <div class="kicker">Prioridad 1</div>
+          <h3>Base comercial medible</h3>
+          <p>Landing de captación, formularios, CRM conectado, atribución por canal, correo y WhatsApp con reglas claras de seguimiento.</p>
+        </div>
+        <div class="card card-accent-blue">
+          <div class="kicker">Prioridad 2</div>
+          <h3>Narrativa de marca</h3>
+          <p>Comunicar la nueva identidad, historia, omnicanalidad, consultoría, NIA y especialización en crecimiento comercial.</p>
+        </div>
+        <div class="card card-accent-purple">
+          <div class="kicker">Prioridad 3</div>
+          <h3>Ofertas separadas</h3>
+          <p>Campañas y recorridos diferentes para Software Netzen, Alta Dirección, Distribuidor Independiente y Consulting.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="cambios">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">08 · Matriz de correcciones</div>
+        <h2>Qué cambió de la <em>v1 a la v2</em></h2>
+        <p>Estas son las correcciones que deben propagarse a presentaciones, web, campañas, minutas y futuros documentos.</p>
+      </div>
+
+      <div class="correction-grid">
+        <div class="head">Tema</div><div class="head">Versión 1</div><div class="head">Versión 2 correcta</div>
+        <div>Clientes activos</div><div class="old-claim">+50 clientes tech activos.</div><div class="new-claim">Se retiró la cifra. Se mencionó "arriba de 100 / ciento y pico", pero no quedó una métrica definida por unidad, cartera o servidor.</div>
+        <div>Misión</div><div class="old-claim">"Ser el brazo tecnológico..." como misión declarada.</div><div class="new-claim">Es una frase útil de posicionamiento, no la misión oficial. La misión, visión y valores 2026 deben tomarse del documento corporativo.</div>
+        <div>Empresa familiar</div><div class="old-claim">Tercera generación; Yvette como hija.</div><div class="new-claim">Gerardo y Lizelotte son primera generación; Diego es segunda generación. Yvette es hermana de Lizelotte.</div>
+        <div>Nombre del software</div><div class="old-claim">FRAMEX como marca del core.</div><div class="new-claim">Usar "Software Netzen" en marketing. Multinet MBA fue referido como nombre registrado. FRAMEX no es la marca general.</div>
+        <div>Modelo de producto</div><div class="old-claim">Software a la medida como oferta central.</div><div class="new-claim">Licencia SaaS modular. Adaptaciones específicas sí; fábrica abierta de desarrollos a la medida, no.</div>
+        <div>NIA</div><div class="old-claim">Asistente integral del usuario y producto separable.</div><div class="new-claim">Hoy está enfocada en reporteo y viene integrada en versiones nuevas. El asistente operativo avanzado es una evolución propuesta.</div>
+        <div>Live Shopping</div><div class="old-claim">Integrado dentro de la oferta base.</div><div class="new-claim">Es un extra con renta adicional y disponibilidad condicionada por mercado y plataforma.</div>
+        <div>Capacidad técnica</div><div class="old-claim">Máximo o referencia de +400,000 concurrentes.</div><div class="new-claim">No comunicar un techo. La arquitectura se dimensiona por concurrencia, procesos y patrón de uso.</div>
+        <div>Academy</div><div class="old-claim">Un diplomado mezclando Alta Dirección y Distribuidor Independiente.</div><div class="new-claim">Son dos diplomados distintos, con público, currículo, capacidad y economía diferentes.</div>
+        <div>Cliente ideal</div><div class="old-claim">Startup sin masa crítica como cliente no ideal.</div><div class="new-claim">Una empresa nueva capitalizada, con líder experto y producto definido, es la prioridad de inmediatez. La empresa madura es prioridad de estabilidad.</div>
+        <div>Procesos</div><div class="old-claim">Procesos internos sin documentar.</div><div class="new-claim">Los procesos sí están documentados y se siguen ejecutando.</div>
+        <div>CRM</div><div class="old-claim">No existe un CRM.</div><div class="new-claim">Existe un CRM interno; falta integrarlo y homologarlo con el proceso de marketing y ventas.</div>
+        <div>Academy y volumen</div><div class="old-claim">100 alumnos como regla del diplomado.</div><div class="new-claim">100-200 es viable para Distribuidor Independiente. Alta Dirección es más personalizado y suele operar con grupos menores.</div>
+        <div>Arquitectura de marca</div><div class="old-claim">Dos marcas separadas: Netzen y Academy.</div><div class="new-claim">Netzen es la marca central con tres brazos: Tecnología, Academy y Consulting.</div>
+        <div>WhatsApp + IA</div><div class="old-claim">Ventaja técnica ya disponible.</div><div class="new-claim">WhatsApp masivo, automatización y conexión con IA son parte de la estrategia a implementar, no una capacidad comercial cerrada.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="pendientes">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">09 · Pendientes finales</div>
+        <h2>Lo que falta para cerrar la <em>fuente maestra</em></h2>
+        <p>Las sesiones resolvieron gran parte de las preguntas de la v1. La lista siguiente contiene únicamente los vacíos que todavía afectan mensajes, campañas, pricing o implementación.</p>
+      </div>
+
+      <div class="table-wrap" style="margin-bottom:2rem;">
+        <table class="compact-table">
+          <thead><tr><th>Prioridad</th><th>Pendiente</th><th>Por qué importa</th><th>Fuente esperada</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-red">Alta</span></td><td class="td-title">Misión, visión, valores y plan estratégico 2026</td><td>Evita convertir frases de sesión en definiciones corporativas oficiales.</td><td>Documentos enviados por Lizelotte al equipo.</td></tr>
+            <tr><td><span class="badge badge-red">Alta</span></td><td class="td-title">Mapa oficial de productos y nombres legales</td><td>Define uso de Software Netzen, Multinet MBA, NIA, Tiempo Naranja y satelitales.</td><td>Mapa corporativo y registros de marca.</td></tr>
+            <tr><td><span class="badge badge-red">Alta</span></td><td class="td-title">Tabla de pricing</td><td>Separar instalación, renta, escalamiento, extras, infraestructura, capacitación y consultoría.</td><td>Comercial, contratos y administración.</td></tr>
+            <tr><td><span class="badge badge-red">Alta</span></td><td class="td-title">Ficha de Tiempo Naranja</td><td>Ya se vende, pero la guía no tiene alcance, promesa, precio oficial, regulación, costo ni buyer persona.</td><td>Producto, comercial y legal.</td></tr>
+            <tr><td><span class="badge badge-gold">Media</span></td><td class="td-title">Política actual de NIA</td><td>Confirmar tokens incluidos, consumo, privacidad, uso de modelos externos y funcionalidades por versión.</td><td>Producto y arquitectura.</td></tr>
+            <tr><td><span class="badge badge-gold">Media</span></td><td class="td-title">Economía de cada diplomado</td><td>No mezclar precio, capacidad, punto de equilibrio y margen de programas distintos.</td><td>Academy y administración.</td></tr>
+            <tr><td><span class="badge badge-gold">Media</span></td><td class="td-title">Cifra oficial de clientes</td><td>Definir si se cuenta por empresa, servidor, licencia, cartera activa o unidad de negocio.</td><td>Dirección, administración y sistemas.</td></tr>
+            <tr><td><span class="badge badge-gold">Media</span></td><td class="td-title">Certificaciones y vigencia</td><td>Una certificación vencida no debe presentarse como vigente. Falta número y estado de Moprosoft y antecedentes.</td><td>Dirección y calidad.</td></tr>
+            <tr><td><span class="badge badge-blue">Contenido</span></td><td class="td-title">Casos, testimonios y permisos</td><td>Transformar relaciones de 10-15 años en evidencia de crecimiento, servicio y permanencia.</td><td>Ejecutivos de cuenta y clientes autorizados.</td></tr>
+            <tr><td><span class="badge badge-blue">Contenido</span></td><td class="td-title">Política de demo y materiales</td><td>Equilibrar conversión con protección del producto frente a copia o mystery shopping.</td><td>Dirección, comercial, producto y legal.</td></tr>
+            <tr><td><span class="badge badge-blue">Digital</span></td><td class="td-title">Accesos y analítica</td><td>Inventario de dominios, CMS, hosting, Search Console, Analytics, redes, CRM y activos de marca.</td><td>Diego, administración y proveedores.</td></tr>
+            <tr><td><span class="badge badge-blue">Digital</span></td><td class="td-title">KPIs y presupuesto</td><td>Metas de ventas, ciclo, conversión, CAC permitido e inversión para priorizar campañas.</td><td>Dirección y comercial.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:linear-gradient(135deg,rgba(0,200,255,0.1),rgba(0,255,163,0.05));border:1px solid rgba(0,200,255,0.2);border-radius:var(--radius);padding:2.5rem;text-align:center;">
+        <div class="kicker" style="color:var(--accent-blue);">Conclusión operativa</div>
+        <p style="color:var(--text-secondary);font-size:0.98rem;max-width:760px;margin:0 auto 1rem;line-height:1.75;">
+          Netzen no es solamente un software para multinivel. Es un ecosistema de tecnología, conocimiento y educación especializado en ayudar a empresas y redes a vender, profesionalizarse y crecer. La estrategia debe preservar esa profundidad, pero explicarla con menos fricción, nombres claros, ofertas separadas y evidencia verificable.
+        </p>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;color:var(--text-primary);">Documento de trabajo interno · WeSpeak x Netzen</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1rem;">
+        <img src="wespeak_logo_1779934269641.png" alt="WeSpeak" style="height:28px;border-radius:4px;" onerror="this.style.display='none'" />
+        <span style="color:var(--text-muted);font-size:0.85rem;">x</span>
+        <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:1rem;color:var(--accent-red);">NETZEN</span>
+      </div>
+      <p style="margin-bottom:0.5rem;">Sesión de reconocimiento v2 · Confidencial · Preparado por WeSpeak</p>
+      <p>Fuentes: sesiones del 15, 18, 19, 21, 22, 25, 28 y 29 de mayo de 2026, organigrama 2026 y briefs de Netzen Academy.</p>
+    </div>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 110) current = section.id;
+      });
+      navLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === '#' + current ? 'var(--text-primary)' : '';
+      });
+    });
+  </script>
+</body>
+</html>
